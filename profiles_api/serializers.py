@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import UserProfile
+from .models import UserProfile,ProfileFeedItem
 
 class HelloSerializer(serializers.Serializer):
     """Serialize a name field for testing our APIview"""
@@ -12,14 +12,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('id','email','name','password')
-        extra_kwagrs = {
-            'password':{
-                'write_only':True,
-                'style':{'input_type':'password'}
-            },
+        
+        extra_kwargs = {
+        'password': {
+            'write_only': True,
+            'style': {'input_type': 'password'}
+        },
         }
-    
-    def create(self,validated_data):
+
+
+        
+    def create(self,validated_data):    
         """Create and return a new user"""
         user = UserProfile.objects.create_user(
             email=validated_data['email'],
@@ -28,3 +31,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
         )
 
         return user
+
+class ProfileFeedItemSerializer(serializers.ModelSerializer):
+    """ Serializer of Profile Feed Item"""
+
+    class Meta:
+        model = ProfileFeedItem
+        fields = ('id','user_profile','status_text','created_on')
+        extra_kwargs = {'user_profile':{'read_only':True},}
